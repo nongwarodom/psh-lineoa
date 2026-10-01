@@ -7,7 +7,7 @@ app.use(express.json());
 const LINE_CHANNEL_ACCESS_TOKEN = 'phv2ONPwmuGM6U/tOvrPK/qjLB9TiL2S4JcgxsIVcYLa0Iy1cPwqd0gz93WnOv5R7ZgGKgM9jMT0LywQrBTzhqdTHSAt7qXUIhZom5AMfNSUC9HXuSz+C71+Epq3HlHpXEJpo1GLJmoXRPLM5uXcBQdB04t89/1O/w1cDnyilFU=';
 
 // Webhook endpoint
-app.post('/webhook', async (req, res) => {
+app.post(['/webhook', '/index.js', '/'], async (req, res) => {
     // Return HTTP 200 to LINE
     res.status(200).send('OK');
 
