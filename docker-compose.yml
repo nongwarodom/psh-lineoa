@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  line-bot:
+    build: .
+    container_name: psh-lineoa-bot
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    # environment:
+    #   - LINE_CHANNEL_ACCESS_TOKEN=${LINE_CHANNEL_ACCESS_TOKEN:-YOUR_CHANNEL_ACCESS_TOKEN}
+    volumes:
+      # Map โฟลเดอร์ปัจจุบันเข้าไปใน container ทำให้แก้โค้ดแล้วอัปเดตได้เลยถ้าเรา restart container
+      - .:/app
+      # ซ่อน node_modules ของ host ไม่ให้ไปทับ node_modules ใน container
+      - /app/node_modules
+    restart: unless-stopped
