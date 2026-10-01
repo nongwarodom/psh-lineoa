@@ -8,16 +8,22 @@ const LINE_CHANNEL_ACCESS_TOKEN = 'phv2ONPwmuGM6U/tOvrPK/qjLB9TiL2S4JcgxsIVcYLa0
 
 // Webhook endpoint
 app.post(['/webhook', '/index.js', '/'], async (req, res) => {
-    // Return HTTP 200 to LINE
-    res.status(200).send('OK');
-
     const events = req.body.events;
-    if (!events || events.length === 0) return;
+    if (!events || events.length === 0) {
+        return res.status(200).send('OK');
+    }
 
-    for (const event of events) {
-        if (event.type === 'message' && event.message.type === 'text') {
-            await handleMessage(event);
+    try {
+        for (const event of events) {
+            if (event.type === 'message' && event.message.type === 'text') {
+                await handleMessage(event);
+            }
         }
+        // Send 200 OK AFTER processing so Vercel doesn't kill the background task
+        res.status(200).send('OK');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error');
     }
 });
 
