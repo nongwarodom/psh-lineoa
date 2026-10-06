@@ -105,25 +105,24 @@ async function handleMessage(event) {
     // Flow 2: สถานการณ์โรคระบาด (Disease Situation)
     else if (userText === 'สถานการณ์โรคระบาด') {
         try {
+            const https = require('https');
+            const agent = new https.Agent({ rejectUnauthorized: false });
             const response = await axios.post('https://rep-prasathos.moph.go.th:9003/api/notify/outbreak', {}, {
                 headers: {
                     'X-API-Key': '09c85bd84874d29c12f7396810e094700a76b08e94d8b07ad000efb92469440c'
-                }
+                },
+                httpsAgent: agent
             });
             
-            // Handle different types of response data appropriately
-            if (typeof response.data === 'string') {
-                replyText = response.data;
-            } else if (response.data && response.data.message) {
-                replyText = response.data.message;
-            } else if (response.data && response.data.text) {
-                replyText = response.data.text;
+            if (response.data && response.data.messages && Array.isArray(response.data.messages)) {
+                await sendReply(replyToken, response.data.messages);
+                return;
             } else {
-                replyText = JSON.stringify(response.data, null, 2);
+                replyText = 'ดึงข้อมูลสำเร็จ แต่รูปแบบข้อมูลไม่ถูกต้อง';
             }
         } catch (error) {
             console.error('Error fetching outbreak data:', error);
-            replyText = 'ขออภัย ไม่สามารถดึงข้อมูลสถานการณ์โรคระบาดได้ในขณะนี้';
+            replyText = 'ขออภัย ไม่สามารถดึงข้อมูลได้';
         }
     }
     // Flow 3: แจ้งเหตุ/รายงานความผิดปกติ (Report Routing)
