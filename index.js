@@ -104,7 +104,27 @@ async function handleMessage(event) {
     }
     // Flow 2: สถานการณ์โรคระบาด (Disease Situation)
     else if (userText === 'สถานการณ์โรคระบาด') {
-        replyText = '📊 สถานการณ์โรคติดต่อ อ.ปราสาท (อัปเดตล่าสุด):\n- ไข้เลือดออก: 5 ราย (ต.กังแอน, ต.บ้านพลวง)\n- ไข้ดิน: 2 ราย\nเฝ้าระวังและป้องกันตัวเองด้วยนะครับ';
+        try {
+            const response = await axios.post('https://rep-prasathos.moph.go.th:9003/api/notify/outbreak', {}, {
+                headers: {
+                    'X-API-Key': '09c85bd84874d29c12f7396810e094700a76b08e94d8b07ad000efb92469440c'
+                }
+            });
+            
+            // Handle different types of response data appropriately
+            if (typeof response.data === 'string') {
+                replyText = response.data;
+            } else if (response.data && response.data.message) {
+                replyText = response.data.message;
+            } else if (response.data && response.data.text) {
+                replyText = response.data.text;
+            } else {
+                replyText = JSON.stringify(response.data, null, 2);
+            }
+        } catch (error) {
+            console.error('Error fetching outbreak data:', error);
+            replyText = 'ขออภัย ไม่สามารถดึงข้อมูลสถานการณ์โรคระบาดได้ในขณะนี้';
+        }
     }
     // Flow 3: แจ้งเหตุ/รายงานความผิดปกติ (Report Routing)
     else if (userText.startsWith('แจ้งเหตุ') || userText === 'แจ้งเหตุโรคติดต่อ') {
