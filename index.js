@@ -122,7 +122,7 @@ async function handleMessage(event) {
             }
         } catch (error) {
             console.error('Error fetching outbreak data:', error);
-            replyText = 'ขออภัย ไม่สามารถดึงข้อมูลได้';
+            replyText = 'ขออภัย ไม่สามารถดึงข้อมูลได้: ' + (error.message || String(error));
         }
     }
     // Flow 3: แจ้งเหตุ/รายงานความผิดปกติ (Report Routing)
